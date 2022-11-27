@@ -2,6 +2,8 @@ from bing_image_downloader import downloader
 import wikipedia
 import string
 import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 import shutil
 import os
 
@@ -35,7 +37,7 @@ class DataCollection:
             print("Try something specific\nExample: Sprite -> Sprite (drink)")
             return None
         remove_words = list(nltk.corpus.stopwords.words('english')) + list(string.punctuation) + list(["'s"]) + list(['1','2','3','4','5','6','7','8','9','0'])
-        word_tokens = nltk.tokenize.word_tokenize(text)
+        word_tokens = word_tokenize(text)
         filtered_sentence = [w for w in word_tokens if not w.lower() in remove_words]
         return filtered_sentence
 

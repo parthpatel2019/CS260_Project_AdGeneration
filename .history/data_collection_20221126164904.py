@@ -2,6 +2,7 @@ from bing_image_downloader import downloader
 import wikipedia
 import string
 import nltk
+from nltk.tokenize import word_tokenize
 import shutil
 import os
 
