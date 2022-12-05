@@ -12,9 +12,10 @@ Due to the lack of trainable parameters, this approach should work better with l
 
 1. Encode tested prompts as word2vec embeddings using `gensim`
     - https://radimrehurek.com/gensim/
-2. [Define similarity metric between two prompts] 
-    - range: [0, 1]
-    - some form of cosine similarity
+2. Define similarity metric
+    - `gensim.models.keyedvectors.KeyedVectors.n_similarity(ws1, ws2)`
+    - compute cosine similarity between `ws1` and `ws2`
+    - https://radimrehurek.com/gensim/models/keyedvectors.html#gensim.models.keyedvectors.KeyedVectors.n_similarity
 3. Given untested prompt, compute similarity to all tested prompts
 4. Use weighted average of similarities as predicted score
     - using AB test scores for weights
