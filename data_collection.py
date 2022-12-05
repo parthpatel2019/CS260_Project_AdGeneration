@@ -10,6 +10,7 @@ class DataCollection:
         self.output_directory = './dataset/'
         self.limit = 5
         nltk.download('punkt')
+        nltk.download('stopwords')
         self.my_downloader = downloader.Downloader()
         self.my_downloader.directory = self.output_directory
         self.my_downloader.extensions = '.jpg'
