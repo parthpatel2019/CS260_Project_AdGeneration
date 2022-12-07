@@ -46,7 +46,7 @@ class DataCollection:
 
     def run(self, input):
         words_list = self.get_words(input)
-        if(words_list is None):
+        if words_list is None:
             return None, None
         self.remove_existing_directory(input)
         self.download_image(input)
