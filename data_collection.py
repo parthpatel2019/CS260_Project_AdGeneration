@@ -1,9 +1,15 @@
+from urllib import request
 import simple_image_download.simple_image_download as downloader
 import wikipedia
 import string
 import nltk
 import shutil
 import os
+import requests
+from nltk.corpus import wordnet as wn
+
+nouns = {x.name().split('.', 1)[0] for x in wn.all_synsets('n')}
+
 
 class DataCollection:
     def __init__(self):
@@ -30,28 +36,61 @@ class DataCollection:
         else:
             print("Directory does not exist so continue download...")
 
+    def get_triggered_words(self, word):
+        response_data = requests.get(f"https://api.datamuse.com/words?rel_trg={word}").json()
+        words = [metadata['word'] for metadata in response_data]
+        return words
+
+    def find_nouns(self, words):
+        return [word for word in words if word in nouns]
+
+    def get_adjectives(self, word):
+        response_data = requests.get(f"https://api.datamuse.com/words?rel_jjb={word}").json()
+        words = [metadata['word'] for metadata in response_data]
+        return words
+
     def get_words(self, input):
+        noun_adj_dict = {}
+        words = input.split(' ')
+
+        for word in words:
+            triggered_words = self.get_triggered_words(word)[:10]
+            triggered_nouns = self.find_nouns(triggered_words)
+            for noun in triggered_nouns:
+                adjectives =self.get_adjectives(noun)[:10]
+                noun_adj_dict[noun] = adjectives
+
+        '''
         try:
             text = wikipedia.summary(input)
         except:
             print("Error: Cannot find wikipedia summary for this input.")
             print("Try something specific\nExample: Sprite -> Sprite (drink)")
             return None
+        
+        
         word_tokens = nltk.tokenize.word_tokenize(text)
         filtered_sentence = [w for w in word_tokens if not w.lower() in list(nltk.corpus.stopwords.words('english'))]
         filtered_sentence = [w for w in filtered_sentence if not w.lower() in list(string.punctuation)]
         filtered_sentence = [w for w in filtered_sentence if not "'s" in w.lower()]
         filtered_sentence = [w for w in filtered_sentence if not any(chr.isdigit() for chr in w.lower())]
         filtered_sentence = [*set(filtered_sentence)]
-        return filtered_sentence
+        '''
+
+        return noun_adj_dict
 
     def run(self, input):
+<<<<<<< HEAD
         words_list = self.get_words(input)
         if words_list is None:
+=======
+        words_dict = self.get_words(input)
+        if(words_dict is None):
+>>>>>>> 8957011 (moar changes)
             return None, None
         self.remove_existing_directory(input)
         self.download_image(input)
         image_paths = []
         for i in self.my_downloader.cached_urls.keys():
             image_paths.append(str(self.my_downloader.cached_urls[i][0] + '/' + i))
-        return image_paths, words_list
+        return image_paths, words_dict
