@@ -8,8 +8,8 @@ from PIL import Image
 
 
 SPECIAL_SUFFIXES = ["Norman Rockwell style", "Starry Night Van Gogh Style", "drain Anime Style", "on the beach"]
-SCORES_FILE = ''
-BASE_IMG_FILE = ''
+SCORES_FILE = 'scores.json'
+BASE_IMG_FILE = 'base_img.jpeg'
 
 
 def main():
@@ -40,7 +40,7 @@ def main():
         img.show()
         tester = ABTester(base_img, img, 5)
         score = tester.run()
-        gen.score[prompt] = score
+        gen.scores[prompt] = score
         #print(img)
     
     #print(prompt_img_dict)
