@@ -6,10 +6,12 @@ import nltk
 import shutil
 import os
 import requests
+import json
+import random
 from nltk.corpus import wordnet as wn
 
-nouns = {x.name().split('.', 1)[0] for x in wn.all_synsets('n')}
-
+with open("nouns.json", 'r') as f:
+    nouns = json.load(f)
 
 class DataCollection:
     def __init__(self):
@@ -49,16 +51,26 @@ class DataCollection:
         words = [metadata['word'] for metadata in response_data]
         return words
 
-    def get_words(self, input):
+    def get_words(self, input, num_nouns=100, num_adj=20):
         noun_adj_dict = {}
-        words = input.split(' ')
 
-        for word in words:
-            triggered_words = self.get_triggered_words(word)[:10]
-            triggered_nouns = self.find_nouns(triggered_words)
-            for noun in triggered_nouns:
-                adjectives =self.get_adjectives(noun)[:10]
-                noun_adj_dict[noun] = adjectives
+        noun_idxs = random.sample(range(len(nouns)), num_nouns)
+        for i in noun_idxs:
+            adj = self.get_adjectives(nouns[i])
+            if len(adj) < num_adj:
+                continue
+            adj_idxs = random.sample(range(len(adj)), num_adj)
+            adj = [adj[j] for j in adj_idxs]
+            noun_adj_dict[nouns[i]] = adj
+
+        # words = input.split(' ')
+
+        # for word in words:
+        #     triggered_words = self.get_triggered_words(word)[:10]
+        #     triggered_nouns = self.find_nouns(triggered_words)
+        #     for noun in triggered_nouns:
+        #         adjectives =self.get_adjectives(noun)[:10]
+        #         noun_adj_dict[noun] = adjectives
 
         '''
         try:

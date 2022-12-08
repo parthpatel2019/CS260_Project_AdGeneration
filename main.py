@@ -34,7 +34,7 @@ def main():
     prompts = gen.generate_inputs(100, 10)
     prompt_img_dict = {}
     for prompt in prompts:
-        img = run_dreambooth("pepperoni pizza, " + prompt, 'pizza')
+        img = run_dreambooth(prompt, 'pizza')
         print(prompt)
         prompt_img_dict[prompt] = img
         img.show()

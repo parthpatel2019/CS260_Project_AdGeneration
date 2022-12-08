@@ -11,7 +11,7 @@ from keytotext import pipeline
 #nlp = pipeline("k2t-base")
 
 PROMPT_MIN_SIZE = 1
-PROMPT_MAX_SIZE = 7
+PROMPT_MAX_SIZE = 3
 
 
 class InputGenerator:
@@ -54,19 +54,18 @@ class InputGenerator:
             unseen_i = [i for i, prompt in enumerate(noun_adj_pairs) if set(prompt) not in tested_prompts]
             unseen_prompts = np.array(noun_adj_pairs, dtype=np.object)[unseen_i]
 
+        # Convert to string prompts
+        prompts = list(map(lambda x: ', '.join([' '.join(y) for y in x]), unseen_prompts))
+        prompts = [f"{self.topic}, {prompt}" for prompt in prompts]
+        prompts += [f"{prompt}, {suffix}" for prompt in prompts for suffix in self.suffixes]
 
         # Find prompts with highest scores
-        pred_scores = np.zeros(len(unseen_prompts))
-        for i, prompt in enumerate(unseen_prompts):
+        pred_scores = np.zeros(len(prompts))
+        for i, prompt in enumerate(prompts):
             pred_scores[i] = self.predictor.predict_score(prompt, self.scores)
 
         best_i = np.argsort(pred_scores)[-output_num:]
-        best_prompts = unseen_prompts[best_i]
+        best_prompts = np.array(prompts)[best_i]
 
-        # Convert to string prompts
-        output = list(map(lambda x: ', '.join([' '.join(y) for y in x]), best_prompts))
-        output = [f"{self.topic}, {prompt}" for prompt in output]
-        output = [f"{prompt}, {suffix}" for prompt in output for suffix in self.suffixes]
-
-        return output
+        return best_prompts
         
