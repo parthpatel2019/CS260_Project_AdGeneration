@@ -18,5 +18,5 @@ def run_dreambooth(query,model_id):
     return image
 
 def test_run_dreambooth():
-    image = run_dreambooth("a coke soda bottle on the beach", "coke")
+    image = run_dreambooth("a pepperoni pizza on the beach", "pizza")
     image.show()

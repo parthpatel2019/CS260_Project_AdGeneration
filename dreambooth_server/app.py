@@ -10,9 +10,9 @@ app = Flask(__name__)
 if not RUNNING_LOCALLLY:
     from pipeline import DreamboothModel
     pizza_model = DreamboothModel(PIZZA_MODEL.path_to_weights)
-    pizza_model.generate_stable_diffusion_pipe
-    coke_model = DreamboothModel(COKE_MODEL.path_to_weights)
-    coke_model.generate_stable_diffusion_pipe()
+    pizza_model.generate_stable_diffusion_pipe()
+    # coke_model = DreamboothModel(COKE_MODEL.path_to_weights)
+    # coke_model.generate_stable_diffusion_pipe()
 
 def get_test_image():
     im = Image.open(TEMP_IMAGE_LOCATION)
@@ -25,8 +25,8 @@ def get_image_for_query(query,model):
 def get_model(model_id):
     if model_id == "pizza":
         return pizza_model
-    elif model_id == 'coke':
-        return coke_model
+    # elif model_id == 'coke':
+    #     return coke_model
     else:
         raise ValueError("Invalid model_id: must be pizza or coke")
 
