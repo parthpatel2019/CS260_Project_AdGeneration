@@ -80,13 +80,8 @@ class DataCollection:
         return noun_adj_dict
 
     def run(self, input):
-<<<<<<< HEAD
-        words_list = self.get_words(input)
-        if words_list is None:
-=======
         words_dict = self.get_words(input)
         if(words_dict is None):
->>>>>>> 8957011 (moar changes)
             return None, None
         self.remove_existing_directory(input)
         self.download_image(input)
