@@ -11,7 +11,7 @@ from keytotext import pipeline
 #nlp = pipeline("k2t-base")
 
 PROMPT_MIN_SIZE = 4
-PROMPT_MAX_SIZE = 2
+PROMPT_MAX_SIZE = 5
 
 class InputGenerator:
     def __init__(self, topic: str, scores: Dict[List[str], float] = dict()) -> None:
@@ -21,7 +21,7 @@ class InputGenerator:
         self.predictor = ScorePredictor()
 
     # Select output_num best samples from a pool of sample_num random unseen samples
-    def generate_inputs(self, sample_num: int, output_num: int) -> List[List[str]]:
+    def generate_inputs(self, sample_num: int, output_num: int) -> List[str]:
         if output_num < 0 or output_num > sample_num:
             print('Invalid input!')
             raise ArgumentError
@@ -37,11 +37,11 @@ class InputGenerator:
         while len(unseen_prompts) < sample_num:
             n = sample_num - len(unseen_prompts)
             nouns = np.array(list(self.words_dict.keys()))
-            num_samples = rng.integers(low=0, high=len(self.words_dict), size=n)
+            num_samples = rng.integers(low=0, high=len(self.words_dict), size=(n, PROMPT_MAX_SIZE))
             
             noun_samples = nouns[num_samples]
-            #print(noun_samples)
-            noun_adj_pairs = np.array([(noun, np.random.choice(self.words_dict[noun])) for noun in noun_samples])
+            # print(noun_samples)
+            noun_adj_pairs = [tuple([(np.random.choice(self.words_dict[noun]), noun) for noun in nouns]) for nouns in noun_samples]
             #print(noun_adj_pairs)
             
             #print(word_samples)
@@ -53,10 +53,9 @@ class InputGenerator:
             #print(sentences)
 
             unseen_i = [i for i, prompt in enumerate(noun_adj_pairs) if set(prompt) not in tested_prompts]
-            unseen_prompts = noun_adj_pairs[unseen_i]
-            
+            unseen_prompts = np.array(noun_adj_pairs)[unseen_i]
 
-        print(unseen_prompts)
+
         # Find prompts with highest scores
         pred_scores = np.zeros(len(unseen_prompts))
         for i, prompt in enumerate(unseen_prompts):
@@ -65,8 +64,9 @@ class InputGenerator:
         best_i = np.argsort(pred_scores)[-output_num:]
         #print(best_i)
         #print(unseen_prompts[best_i])
-        return unseen_prompts[best_i]
-    
-        
+        best_prompts = unseen_prompts[best_i]
 
+        #lambda x: ', '.join([''.join(y) for y in x])
+        output = list(map(lambda x: ', '.join([' '.join(y) for y in x]), best_prompts))
+        return output
         
