@@ -4,7 +4,7 @@ import gensim.downloader as api
 MODEL = 'glove-wiki-gigaword-100'
 
 class ScorePredictor:
-    def __init__(self, topic: str) -> None:
+    def __init__(self) -> None:
         self.word_vectors = api.load(MODEL)
 
     # Computes similarity between prompt1 and prompt2
@@ -13,6 +13,8 @@ class ScorePredictor:
 
     # Predicts AB test score for prompt
     def predict_score(self, prompt: List[str], scores: Dict[List[str], float]) -> float:
+        if not scores:
+            return 0
         total = 0
         for tested_prompt, score in scores.items():
             total += self.compute_similarity(prompt, tested_prompt) * score
