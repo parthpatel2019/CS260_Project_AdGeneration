@@ -19,3 +19,9 @@ class ScorePredictor:
         for tested_prompt, score in scores.items():
             total += self.compute_similarity(prompt, tested_prompt) * score
         return total / len(scores)
+
+if __name__ == "__main__":
+    p = ScorePredictor()
+    p1 = ["pepperoni", "pizza", "cold"]
+    p2 = ["pepperoni", "pizza", "hot", "cheesy"]
+    print(p.compute_similarity(p1, p2))
