@@ -13,13 +13,15 @@ from keytotext import pipeline
 PROMPT_MIN_SIZE = 1
 PROMPT_MAX_SIZE = 7
 
+
 class InputGenerator:
-    def __init__(self, topic: str, scores: Dict[List[str], float] = dict()) -> None:
+    def __init__(self, topic: str, scores: Dict[List[str], float] = dict(), suffixes: List[str] = list()) -> None:
         data = DataCollection()
         self.topic = topic
         self.words_dict = data.get_words(topic)
         self.scores = scores
         self.predictor = ScorePredictor()
+        self.suffixes = suffixes
 
     # Select output_num best samples from a pool of sample_num random unseen samples
     def generate_inputs(self, sample_num: int, output_num: int) -> List[str]:
@@ -64,6 +66,7 @@ class InputGenerator:
         # Convert to string prompts
         output = list(map(lambda x: ', '.join([' '.join(y) for y in x]), best_prompts))
         output = [f"{self.topic}, {prompt}" for prompt in output]
+        output = [f"{prompt}, {suffix}" for prompt in output for suffix in self.suffixes]
 
         return output
         

@@ -95,8 +95,8 @@ class ABTester:
     def run(self):
         for _ in range(self.total_participants):
             self.run_polling_prompt()
-
-        return self.dream_booth_image_selects / self.total_participants
+        self.score = self.dream_booth_image_selects / self.total_participants
+        return self.score
     """
     Run the class, performing simulated A/B testing via automatically generating the score
     given some mean and standard deviation (both in [0, 1]). Effectively bypasses true A/B testing for demo purposes.
