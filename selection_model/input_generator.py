@@ -10,12 +10,13 @@ from keytotext import pipeline
 # It will download three files: 1. config.json, 2. tokenizer.json, 3. pytorch_model.bin (~850 MB)
 #nlp = pipeline("k2t-base")
 
-PROMPT_MIN_SIZE = 4
-PROMPT_MAX_SIZE = 5
+PROMPT_MIN_SIZE = 1
+PROMPT_MAX_SIZE = 7
 
 class InputGenerator:
     def __init__(self, topic: str, scores: Dict[List[str], float] = dict()) -> None:
         data = DataCollection()
+        self.topic = topic
         self.words_dict = data.get_words(topic)
         self.scores = scores
         self.predictor = ScorePredictor()
@@ -26,9 +27,7 @@ class InputGenerator:
             print('Invalid input!')
             raise ArgumentError
 
-        #words = np.array(self.words)
-        tested_prompts = set(map(np.array, self.scores.keys()))
- 
+        tested_prompts = set(map(np.array, self.scores.keys())) 
         unseen_prompts = set()
         rng = np.random.default_rng()
 
@@ -38,22 +37,20 @@ class InputGenerator:
             n = sample_num - len(unseen_prompts)
             nouns = np.array(list(self.words_dict.keys()))
             num_samples = rng.integers(low=0, high=len(self.words_dict), size=(n, PROMPT_MAX_SIZE))
+            sample_sizes = rng.integers(low=PROMPT_MIN_SIZE, high=PROMPT_MAX_SIZE+1, size=n)
             
             noun_samples = nouns[num_samples]
-            # print(noun_samples)
-            noun_adj_pairs = [tuple([(np.random.choice(self.words_dict[noun]), noun) for noun in nouns]) for nouns in noun_samples]
-            #print(noun_adj_pairs)
+            pair = lambda noun: (np.random.choice(self.words_dict[noun]), noun)
+            noun_adj_pairs = [tuple([pair(nouns[j]) for j in range(sample_sizes[i])]) for i, nouns in enumerate(noun_samples)]
             
-            #print(word_samples)
             # Configure the model parameters
             #config = {"do_sample": True, "num_beams": 4, "no_repeat_ngram_size": 3, "early_stopping": True}
             
             # Provide list of keywords into the model as input
             #sentences = np.array([nlp(word_vec, **config) for word_vec in word_samples])
-            #print(sentences)
 
             unseen_i = [i for i, prompt in enumerate(noun_adj_pairs) if set(prompt) not in tested_prompts]
-            unseen_prompts = np.array(noun_adj_pairs)[unseen_i]
+            unseen_prompts = np.array(noun_adj_pairs, dtype=np.object)[unseen_i]
 
 
         # Find prompts with highest scores
@@ -62,11 +59,11 @@ class InputGenerator:
             pred_scores[i] = self.predictor.predict_score(prompt, self.scores)
 
         best_i = np.argsort(pred_scores)[-output_num:]
-        #print(best_i)
-        #print(unseen_prompts[best_i])
         best_prompts = unseen_prompts[best_i]
 
-        #lambda x: ', '.join([''.join(y) for y in x])
+        # Convert to string prompts
         output = list(map(lambda x: ', '.join([' '.join(y) for y in x]), best_prompts))
+        output = [f"{self.topic}, {prompt}" for prompt in output]
+
         return output
         
