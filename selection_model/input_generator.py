@@ -54,6 +54,7 @@ class InputGenerator:
 
             unseen_i = [i for i, prompt in enumerate(noun_adj_pairs) if set(prompt) not in tested_prompts]
             unseen_prompts = noun_adj_pairs[unseen_i]
+            
 
         print(unseen_prompts)
         # Find prompts with highest scores
