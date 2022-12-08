@@ -15,7 +15,7 @@ PROMPT_MAX_SIZE = 7
 
 
 class InputGenerator:
-    def __init__(self, topic: str, scores: Dict[List[str], float] = dict(), suffixes: List[str] = list()) -> None:
+    def __init__(self, topic: str, scores: Dict[str, float] = dict(), suffixes: List[str] = list()) -> None:
         data = DataCollection()
         self.topic = topic
         self.words_dict = data.get_words(topic)
