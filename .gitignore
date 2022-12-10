@@ -1,0 +1,5 @@
+.DS_Store
+.env/**
+.history/**
+__pycache__/**
+dataset/Chipotle_Mexican_Grill/**

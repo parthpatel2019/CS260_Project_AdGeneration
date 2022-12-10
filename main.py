@@ -7,14 +7,13 @@ from ab_testing import ABTester
 from PIL import Image
 
 
-SPECIAL_SUFFIXES = ["Norman Rockwell style", "Starry Night Van Gogh Style", "drain Anime Style", "on the beach"]
 SCORES_FILE = 'scores.json'
 BASE_IMG_FILE = 'base_img.jpeg'
 
 
 def main():
-    '''    data_collector = DataCollection()
-    image_list, words_list = data_collector.run('chipotle mexican grill')
+    '''    data_collector = DataCollection('chipotle mexican grill')
+    image_list, words_list = data_collector.run()
     
     print(words_list)
     
@@ -30,7 +29,7 @@ def main():
 
     base_img = Image.open(BASE_IMG_FILE)
 
-    gen = InputGenerator("pizza", scores=scores, suffixes=SPECIAL_SUFFIXES)
+    gen = InputGenerator("pepperoni pizza", scores=scores)
     prompts = gen.generate_inputs(100, 10)
     prompt_img_dict = {}
     for prompt in prompts:
@@ -38,9 +37,9 @@ def main():
         print(prompt)
         prompt_img_dict[prompt] = img
         img.show()
-        tester = ABTester(base_img, img, 5)
-        score = tester.run()
-        gen.scores[prompt] = score
+        # tester = ABTester(base_img, img, 5)
+        # score = tester.run()
+        # gen.scores[prompt] = score
         #print(img)
     
     #print(prompt_img_dict)

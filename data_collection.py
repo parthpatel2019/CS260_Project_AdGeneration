@@ -7,14 +7,28 @@ import shutil
 import os
 import requests
 import json
+import csv
 import random
 from nltk.corpus import wordnet as wn
 
-with open("nouns.json", 'r') as f:
-    nouns = json.load(f)
+NOUN_DATA = "common"
+
+if NOUN_DATA == "general":
+    with open("nouns.json", 'r') as f:
+        nouns = json.load(f)
+
+elif NOUN_DATA == "common":
+    with open('nounlist.csv', 'r') as f:
+        reader = csv.reader(f)
+        nouns = list(reader)
+        nouns = [noun[0] for noun in nouns]
+
+with open("phrases.json", 'r') as f:
+    phrases = json.load(f)
 
 class DataCollection:
-    def __init__(self):
+    def __init__(self, topic):
+        self.topic = topic
         self.output_directory = './dataset/'
         self.limit = 5
         nltk.download('punkt')
@@ -23,11 +37,11 @@ class DataCollection:
         self.my_downloader.directory = self.output_directory
         self.my_downloader.extensions = '.jpg'
 
-    def download_image(self, input):
-        self.my_downloader.download(input, limit=self.limit)
+    def download_image(self):
+        self.my_downloader.download(self.topic, limit=self.limit)
 
-    def remove_existing_directory(self, input):
-        dir_path = self.output_directory + '/' + str(input)
+    def remove_existing_directory(self):
+        dir_path = self.output_directory + '/' + str(self.topic)
         dir_exist = os.path.isdir(dir_path)
         if dir_exist:
             try:
@@ -51,7 +65,10 @@ class DataCollection:
         words = [metadata['word'] for metadata in response_data]
         return words
 
-    def get_words(self, input, num_nouns=100, num_adj=20):
+    def get_phrases(self):
+        return phrases
+
+    def get_words(self, num_nouns=100, num_adj=20):
         noun_adj_dict = {}
 
         noun_idxs = random.sample(range(len(nouns)), num_nouns)
@@ -63,7 +80,7 @@ class DataCollection:
             adj = [adj[j] for j in adj_idxs]
             noun_adj_dict[nouns[i]] = adj
 
-        # words = input.split(' ')
+        # words = self.topic.split(' ')
 
         # for word in words:
         #     triggered_words = self.get_triggered_words(word)[:10]
@@ -74,7 +91,7 @@ class DataCollection:
 
         '''
         try:
-            text = wikipedia.summary(input)
+            text = wikipedia.summary(self.topic)
         except:
             print("Error: Cannot find wikipedia summary for this input.")
             print("Try something specific\nExample: Sprite -> Sprite (drink)")
@@ -91,12 +108,12 @@ class DataCollection:
 
         return noun_adj_dict
 
-    def run(self, input):
-        words_dict = self.get_words(input)
+    def run(self):
+        words_dict = self.get_words()
         if(words_dict is None):
             return None, None
-        self.remove_existing_directory(input)
-        self.download_image(input)
+        self.remove_existing_directory()
+        self.download_image()
         image_paths = []
         for i in self.my_downloader.cached_urls.keys():
             image_paths.append(str(self.my_downloader.cached_urls[i][0] + '/' + i))
