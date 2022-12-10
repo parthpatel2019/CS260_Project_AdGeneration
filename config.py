@@ -1,1 +1,1 @@
-DREAMBOOTH_API_URL = "http://54.204.255.82"
+DREAMBOOTH_API_URL = "http://ec2-3-88-26-73.compute-1.amazonaws.com"
