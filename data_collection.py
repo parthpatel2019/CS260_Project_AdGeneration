@@ -80,16 +80,9 @@ class DataCollection:
             adj = [adj[j] for j in adj_idxs]
             noun_adj_dict[nouns[i]] = adj
 
-        # words = self.topic.split(' ')
-
-        # for word in words:
-        #     triggered_words = self.get_triggered_words(word)[:10]
-        #     triggered_nouns = self.find_nouns(triggered_words)
-        #     for noun in triggered_nouns:
-        #         adjectives =self.get_adjectives(noun)[:10]
-        #         noun_adj_dict[noun] = adjectives
-
-        '''
+        return noun_adj_dict
+    
+    def get_wikipedia_words(self):    
         try:
             text = wikipedia.summary(self.topic)
         except:
@@ -104,9 +97,9 @@ class DataCollection:
         filtered_sentence = [w for w in filtered_sentence if not "'s" in w.lower()]
         filtered_sentence = [w for w in filtered_sentence if not any(chr.isdigit() for chr in w.lower())]
         filtered_sentence = [*set(filtered_sentence)]
-        '''
+        
 
-        return noun_adj_dict
+        
 
     def run(self):
         words_dict = self.get_words()
