@@ -37,9 +37,9 @@ def main():
         print(prompt)
         prompt_img_dict[prompt] = img
         img.show()
-        # tester = ABTester(base_img, img, 5)
-        # score = tester.run()
-        # gen.scores[prompt] = score
+        tester = ABTester(base_img, img, 5)
+        score = tester.run()
+        scores[prompt] = score
         #print(img)
     
     #print(prompt_img_dict)

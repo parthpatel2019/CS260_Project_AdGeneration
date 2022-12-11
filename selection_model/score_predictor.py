@@ -10,8 +10,8 @@ class ScorePredictor:
 
     # Computes similarity between prompt1 and prompt2
     def compute_similarity(self, prompt1: str, prompt2: str) -> float:
-        words1 = prompt1.replace(',', ' ').split(' ')
-        words2 = prompt2.replace(',', ' ').split(' ')
+        words1 = prompt1.replace(',', '').split(' ')
+        words2 = prompt2.replace(',', '').split(' ')
         return self.word_vectors.n_similarity(words1, words2)
 
     # Predicts AB test score for prompt
